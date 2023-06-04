@@ -1,5 +1,6 @@
 package com.my_shop.pos.controller;
 
+import com.my_shop.pos.dao.DatabaseAccessCode;
 import com.my_shop.pos.util.PasswordManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -24,18 +25,7 @@ public class RegisterFormController {
 
     public void signUpBtnOnAction(ActionEvent actionEvent) {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/my_shop?useSSL=false",
-                    "root",
-                    "Tsj123##"
-            );
-            String SQL = "INSERT INTO user VALUES (?,?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL);
-            preparedStatement.setString(1, txtUsername.getText());
-            preparedStatement.setString(2, PasswordManager.encryptPassword(txtPassword.getText()));
-
-            if (preparedStatement.executeUpdate() > 0) {
+            if (DatabaseAccessCode.createUser(txtUsername.getText(),txtPassword.getText())) {
                 new Alert(Alert.AlertType.CONFIRMATION, "User Saved Successfully");
                 clearFields();
             } else {

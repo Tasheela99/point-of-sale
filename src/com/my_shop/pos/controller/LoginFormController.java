@@ -1,5 +1,7 @@
 package com.my_shop.pos.controller;
 
+import com.my_shop.pos.dao.DatabaseAccessCode;
+import com.my_shop.pos.dto.UserDto;
 import com.my_shop.pos.util.PasswordManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -22,19 +24,9 @@ public class LoginFormController {
 
     public void signInBtnOnAction(ActionEvent actionEvent) {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/my_shop?useSSL=false",
-                    "root",
-                    "Tsj123##"
-            );
-            String SQL = "SELECT * FROM user WHERE email=?";
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL);
-            preparedStatement.setString(1, txtUsername.getText());
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                if (PasswordManager.decryptPassword(txtPassword.getText(),resultSet.getString("password"))){
+            UserDto userDto = DatabaseAccessCode.findUser(txtUsername.getText());
+           if (userDto!=null) {
+                if (PasswordManager.decryptPassword(txtPassword.getText(),userDto.getPassword())){
                     setUi("DashboardForm");
                 }else {
                     new Alert(Alert.AlertType.WARNING, "Check Your Password and try Again");
