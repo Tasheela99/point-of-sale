@@ -7,7 +7,7 @@
 <AnchorPane fx:id="context" prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my_shop.pos.controller.DashboardFormController">
    <children>
       <ImageView fitHeight="274.0" fitWidth="974.0" layoutX="14.0" layoutY="90.0" pickOnBounds="true" preserveRatio="true" />
-      <Button layoutX="43.0" layoutY="419.0" mnemonicParsing="false" onAction="#custmerManagementBtnOnAction" prefHeight="134.0" prefWidth="295.0" text="Customer Management" />
+      <Button layoutX="43.0" layoutY="419.0" mnemonicParsing="false" onAction="#customerManagementBtnOnAction" prefHeight="134.0" prefWidth="295.0" text="Customer Management" />
       <Button layoutX="43.0" layoutY="565.0" mnemonicParsing="false" onAction="#orderDetailsBtnOnAction" prefHeight="134.0" prefWidth="295.0" text="Order Details" />
       <Button layoutX="352.0" layoutY="419.0" mnemonicParsing="false" onAction="#productManagementBtnOnAction" prefHeight="134.0" prefWidth="295.0" text="Product Management" />
       <Button layoutX="352.0" layoutY="565.0" mnemonicParsing="false" onAction="#incomeReportBtnOnAction" prefHeight="134.0" prefWidth="295.0" text="Income Report" />

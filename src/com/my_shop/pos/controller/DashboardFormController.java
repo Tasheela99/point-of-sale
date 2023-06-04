@@ -11,7 +11,8 @@ import java.io.IOException;
 public class DashboardFormController {
     public AnchorPane context;
 
-    public void custmerManagementBtnOnAction(ActionEvent actionEvent) {
+    public void customerManagementBtnOnAction(ActionEvent actionEvent) throws IOException {
+        setUi("CustomerForm");
     }
 
     public void orderDetailsBtnOnAction(ActionEvent actionEvent) {
