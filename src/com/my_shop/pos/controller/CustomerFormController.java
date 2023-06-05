@@ -75,7 +75,7 @@ public class CustomerFormController {
     private void loadAllCustomers(String searchText) throws SQLException, ClassNotFoundException {
         ObservableList<CustomerTm> observableList = FXCollections.observableArrayList();
         int counter = 1;
-        for (CustomerDto customerDto : searchText.length() > 0 ? DatabaseAccessCode.searchCustomer(searchText) : DatabaseAccessCode.findAllCustomer()) {
+        for (CustomerDto customerDto : searchText.length() > 0 ? new DatabaseAccessCode().searchCustomer(searchText) : new DatabaseAccessCode().findAllCustomer()) {
             Button button = new Button("Delete");
             CustomerTm tm = new CustomerTm(
                     counter,
@@ -94,8 +94,8 @@ public class CustomerFormController {
                 try{
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION,"Are YOU sure", ButtonType.YES, ButtonType.NO);
                     Optional<ButtonType> selectedButtonType = alert.showAndWait();
-                    if (selectedButtonType.equals(ButtonType.YES)){
-                        if (DatabaseAccessCode.deleteCustomer(
+                    if (selectedButtonType.get().equals(ButtonType.YES)){
+                        if (new DatabaseAccessCode().deleteCustomer(
                                 txtEmail.getText()
                         )) {
                             new Alert(Alert.AlertType.CONFIRMATION, "Customer Deleted Successfully");
@@ -110,7 +110,6 @@ public class CustomerFormController {
                     new Alert(Alert.AlertType.ERROR, ex.getMessage()).show();
 
                 }
-
             });
         }
         tbl.setItems(observableList);
@@ -119,7 +118,7 @@ public class CustomerFormController {
     public void btnSaveUpdateOnAction(ActionEvent actionEvent) {
         try {
             if (btnSaveUpdate.getText().equals("Save Customer")) {
-                if (DatabaseAccessCode.createCustomer(
+                if (new DatabaseAccessCode().createCustomer(
                         txtEmail.getText(),
                         txtName.getText(),
                         txtContact.getText(),
@@ -132,7 +131,7 @@ public class CustomerFormController {
 
                 }
             } else {
-                if (DatabaseAccessCode.updateCustomer(
+                if (new DatabaseAccessCode().updateCustomer(
                         txtEmail.getText(),
                         txtName.getText(),
                         txtContact.getText(),

@@ -1,9 +1,18 @@
 package com.my_shop.pos.dao;
 
+import com.my_shop.pos.dao.custom.CustomerDao;
+import com.my_shop.pos.dao.custom.ProductDao;
+import com.my_shop.pos.dao.custom.UserDao;
+import com.my_shop.pos.dao.custom.impl.CustomerDaoImpl;
+import com.my_shop.pos.dao.custom.impl.ProductDaoImpl;
+import com.my_shop.pos.dao.custom.impl.UserDaoImpl;
 import com.my_shop.pos.db.DbConnection;
 import com.my_shop.pos.dto.CustomerDto;
 import com.my_shop.pos.dto.ProductDto;
 import com.my_shop.pos.dto.UserDto;
+import com.my_shop.pos.entity.Customer;
+import com.my_shop.pos.entity.Product;
+import com.my_shop.pos.entity.User;
 import com.my_shop.pos.util.PasswordManager;
 
 import java.sql.*;
@@ -12,31 +21,30 @@ import java.util.List;
 
 public class DatabaseAccessCode {
 
+    CustomerDao customerDao = new CustomerDaoImpl();
+    ProductDao productDao = new ProductDaoImpl();
+    UserDao userDao = new UserDaoImpl();
+
     //===========================================user=======================================================
-    public static boolean createUser(String email, String password) throws ClassNotFoundException, SQLException {
-
-        String SQL = "INSERT INTO user VALUES (?,?)";
-        PreparedStatement preparedStatement = DbConnection.getInstance().getConnection().prepareStatement(SQL);
-
-        preparedStatement.setString(1, email);
-        preparedStatement.setString(2, PasswordManager.encryptPassword(password));
-
-        return preparedStatement.executeUpdate() > 0;
+    public boolean createUser(String email, String password) throws ClassNotFoundException, SQLException {
+        return userDao.saveUser(
+                new User(email, password)
+        );
     }
 
-    public static UserDto findUser(String email) throws ClassNotFoundException, SQLException {
+    public UserDto findUser(String email) throws ClassNotFoundException, SQLException {
 
         String SQL = "SELECT * FROM user WHERE email=?";
         PreparedStatement preparedStatement = DbConnection.getInstance().getConnection().prepareStatement(SQL);
 
         preparedStatement.setString(1, email);
 
-        ResultSet resultSet = preparedStatement.executeQuery();
+        User user = userDao.findUser(email);
 
-        if (resultSet.next()) {
+        if (user != null) {
             return new UserDto(
-                    resultSet.getString(1),
-                    resultSet.getString(2)
+                    user.getEmail(),
+                    user.getPassword()
             );
         }
         return null;
@@ -46,130 +54,98 @@ public class DatabaseAccessCode {
 
     //===========================================customer=======================================================
 
-    public static boolean createCustomer(String email, String name, String contact, double salary) throws ClassNotFoundException, SQLException {
-
-        String SQL = "INSERT INTO customer VALUES (?,?,?,?)";
-        PreparedStatement preparedStatement = DbConnection.getInstance().getConnection().prepareStatement(SQL);
-
-        preparedStatement.setString(1, email);
-        preparedStatement.setString(2, name);
-        preparedStatement.setString(3, contact);
-        preparedStatement.setDouble(4, salary);
-
-        return preparedStatement.executeUpdate() > 0;
+    public boolean createCustomer(String email, String name, String contact, double salary) throws ClassNotFoundException, SQLException {
+        return customerDao.saveCustomer(new Customer(
+                email,
+                name,
+                contact,
+                salary
+        ));
     }
 
-    public static boolean updateCustomer(String email, String name, String contact, double salary) throws ClassNotFoundException, SQLException {
-
-        String SQL = "UPDATE customer SET name=?, contact=?, salary=? WHERE email=?";
-        PreparedStatement preparedStatement = DbConnection.getInstance().getConnection().prepareStatement(SQL);
-
-        preparedStatement.setString(1, name);
-        preparedStatement.setString(2, contact);
-        preparedStatement.setDouble(3, salary);
-        preparedStatement.setString(4, email);
-
-        return preparedStatement.executeUpdate() > 0;
+    public boolean updateCustomer(String email, String name, String contact, double salary) throws ClassNotFoundException, SQLException {
+        return customerDao.updateCustomer(
+                new Customer(
+                        email,
+                        name,
+                        contact,
+                        salary
+                ));
     }
 
-    public static boolean deleteCustomer(String email) throws ClassNotFoundException, SQLException {
+    public boolean deleteCustomer(String email) throws ClassNotFoundException, SQLException {
 
-        String SQL = "DELETE FROM customer WHERE email=?";
-        PreparedStatement preparedStatement = DbConnection.getInstance().getConnection().prepareStatement(SQL);
-
-        preparedStatement.setString(1, email);
-        return preparedStatement.executeUpdate() > 0;
+        return customerDao.deleteCustomer(email);
     }
 
-    public static CustomerDto findCustomer(String email) throws ClassNotFoundException, SQLException {
+    public CustomerDto findCustomer(String email) throws ClassNotFoundException, SQLException {
+        Customer customers = customerDao.findCustomer(email);
 
-        String SQL = "SELECT * FROM customer WHERE email=?";
-        PreparedStatement preparedStatement = DbConnection.getInstance().getConnection().prepareStatement(SQL);
-
-        preparedStatement.setString(1, email);
-
-        ResultSet resultSet = preparedStatement.executeQuery();
-
-        if (resultSet.next()) {
+        if (customers != null) {
             return new CustomerDto(
-                    resultSet.getString(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getDouble(4)
+                    customers.getEmail(),
+                    customers.getName(),
+                    customers.getContact(),
+                    customers.getSalary()
             );
         }
         return null;
     }
 
-    public static List<CustomerDto> findAllCustomer() throws ClassNotFoundException, SQLException {
-
-        String SQL = "SELECT * FROM customer";
-        PreparedStatement preparedStatement = DbConnection.getInstance().getConnection().prepareStatement(SQL);
-
-
-        ResultSet resultSet = preparedStatement.executeQuery();
+    public List<CustomerDto> findAllCustomer() throws ClassNotFoundException, SQLException {
 
         List<CustomerDto> customerDtos = new ArrayList<>();
-        while (resultSet.next()) {
-            customerDtos.add(new CustomerDto(
-                    resultSet.getString(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getDouble(4)
-            ));
+        for (Customer customer : customerDao.findAllCustomer()) {
+            if (customer != null) {
+                customerDtos.add(new CustomerDto(
+                        customer.getEmail(),
+                        customer.getName(),
+                        customer.getContact(),
+                        customer.getSalary()
+                ));
+            }
         }
         return customerDtos;
     }
 
-    public static List<CustomerDto> searchCustomer(String searchText) throws ClassNotFoundException, SQLException {
+    public List<CustomerDto> searchCustomer(String searchText) throws ClassNotFoundException, SQLException {
 
         searchText = "%" + searchText + "%";
-
-        String SQL = "SELECT * FROM customer WHERE email LIKE ? || name LIKE ?";
-        PreparedStatement preparedStatement = DbConnection.getInstance().getConnection().prepareStatement(SQL);
-
-        preparedStatement.setString(1, searchText);
-        preparedStatement.setString(2, searchText);
-
-        ResultSet resultSet = preparedStatement.executeQuery();
-
         List<CustomerDto> customerDtos = new ArrayList<>();
-        while (resultSet.next()) {
+        for (Customer customer : customerDao.searchCustomers(searchText)
+        ) {
             customerDtos.add(new CustomerDto(
-                    resultSet.getString(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getDouble(4)
+                    customer.getEmail(),
+                    customer.getName(),
+                    customer.getContact(),
+                    customer.getSalary()
             ));
         }
         return customerDtos;
     }
-
     //===========================================customer=======================================================
 
 
     //===========================================product=======================================================
-    public static boolean createProduct(int code, String description) throws SQLException, ClassNotFoundException {
-        String SQL = "INSERT INTO product VALUES (?,?)";
-        PreparedStatement preparedStatement = DbConnection.getInstance().getConnection().prepareStatement(SQL);
-
-        preparedStatement.setInt(1, code);
-        preparedStatement.setString(2, description);
-
-        return preparedStatement.executeUpdate() > 0;
+    public boolean createProduct(int code, String description) throws SQLException, ClassNotFoundException {
+        return productDao.saveProduct(
+                new Product(
+                        code,
+                        description
+                )
+        );
     }
 
-    public static boolean updateProduct(int code, String description) throws SQLException, ClassNotFoundException {
-        String SQL = "UPDATE product SET description=? WHERE code=?";
-        PreparedStatement preparedStatement = DbConnection.getInstance().getConnection().prepareStatement(SQL);
-
-        preparedStatement.setString(1, description);
-        preparedStatement.setInt(2, code);
-
-        return preparedStatement.executeUpdate() > 0;
+    public boolean updateProduct(int code, String description) throws SQLException, ClassNotFoundException {
+        return productDao.updateProduct(
+                new Product(
+                        code,
+                        description
+                )
+        );
     }
 
-    public static boolean deleteProduct(int code) throws SQLException, ClassNotFoundException {
+    public boolean deleteProduct(int code) throws SQLException, ClassNotFoundException {
         String SQL = "DELETE FROM product WHERE code=?";
         PreparedStatement preparedStatement = DbConnection.getInstance().getConnection().prepareStatement(SQL);
 
@@ -177,7 +153,7 @@ public class DatabaseAccessCode {
         return preparedStatement.executeUpdate() > 0;
     }
 
-    public static ProductDto searchProduct(int code) throws SQLException, ClassNotFoundException {
+    public ProductDto searchProduct(int code) throws SQLException, ClassNotFoundException {
         String SQL = "SELECT * FROM product WHERE code=?";
         PreparedStatement preparedStatement = DbConnection.getInstance().getConnection().prepareStatement(SQL);
 
@@ -195,7 +171,7 @@ public class DatabaseAccessCode {
         return null;
     }
 
-    public static List<ProductDto> findAllProducts() throws SQLException, ClassNotFoundException {
+    public List<ProductDto> findAllProducts() throws SQLException, ClassNotFoundException {
         String SQL = "SELECT * FROM product";
         PreparedStatement preparedStatement = DbConnection.getInstance().getConnection().prepareStatement(SQL);
 
@@ -212,7 +188,7 @@ public class DatabaseAccessCode {
         return productDtos;
     }
 
-    public static List<ProductDto> searchProduct(String searchText) throws SQLException, ClassNotFoundException {
+    public List<ProductDto> searchProduct(String searchText) throws SQLException, ClassNotFoundException {
         searchText = "%" + searchText + "%";
 
         String SQL = "SELECT * FROM product WHERE code LIKE ? || description LIKE ?";
@@ -232,6 +208,10 @@ public class DatabaseAccessCode {
             ));
         }
         return productDtos;
+    }
+
+    public int getLastProductId() throws SQLException, ClassNotFoundException {
+        return productDao.getLastProductId();
     }
     //===========================================product=======================================================
 

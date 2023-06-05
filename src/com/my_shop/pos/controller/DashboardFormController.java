@@ -18,7 +18,8 @@ public class DashboardFormController {
     public void orderDetailsBtnOnAction(ActionEvent actionEvent) {
     }
 
-    public void productManagementBtnOnAction(ActionEvent actionEvent) {
+    public void productManagementBtnOnAction(ActionEvent actionEvent) throws IOException {
+        setUi("ProductForm");
     }
 
     public void incomeReportBtnOnAction(ActionEvent actionEvent) {

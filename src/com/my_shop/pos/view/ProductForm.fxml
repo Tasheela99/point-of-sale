@@ -9,7 +9,6 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
 <AnchorPane prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.my_shop.pos.controller.ProductFormController">
    <children>
       <Text layoutX="14.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Product Management">
@@ -20,10 +19,10 @@
       <Button layoutX="918.0" layoutY="18.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="71.0" text="Home" />
       <AnchorPane layoutX="14.0" layoutY="88.0" prefHeight="692.0" prefWidth="471.0" style="-fx-background-color: blue;">
          <children>
-            <TextField layoutX="10.0" layoutY="14.0" prefHeight="47.0" prefWidth="270.0" promptText="Product Code" />
-            <Button layoutX="343.0" layoutY="14.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="118.0" text="Add Product" />
-            <TextArea layoutX="10.0" layoutY="66.0" prefHeight="213.0" prefWidth="449.0" promptText="Product Description" />
-            <Button layoutX="340.0" layoutY="284.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="118.0" text="Save Product" />
+            <TextField fx:id="txtProductCode" layoutX="10.0" layoutY="14.0" prefHeight="47.0" prefWidth="270.0" promptText="Product Code" />
+            <Button layoutX="343.0" layoutY="14.0" mnemonicParsing="false" onAction="#addNewProductBtnOnAction" prefHeight="47.0" prefWidth="118.0" text="Add Product" />
+            <TextArea fx:id="txtProductDescription" layoutX="10.0" layoutY="66.0" prefHeight="213.0" prefWidth="449.0" promptText="Product Description" />
+            <Button fx:id="btnSaveUpdate" layoutX="340.0" layoutY="284.0" mnemonicParsing="false" onAction="#saveProductBtnOnAction" prefHeight="47.0" prefWidth="118.0" text="Save Product" />
             <TextField layoutX="10.0" layoutY="336.0" prefHeight="47.0" prefWidth="449.0" promptText="Search Here" />
             <TableView layoutX="10.0" layoutY="393.0" prefHeight="291.0" prefWidth="449.0">
               <columns>
